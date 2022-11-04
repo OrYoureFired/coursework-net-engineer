@@ -93,18 +93,16 @@ def menu():
             # and implemented it within the if statement itself, in order to use the config function for more things
             print("Which Configuration would you like to save?")
             decision = input("Running or Startup? (R/S): ")
-            both_configs = return_configs()
             
-            while True:
-                if decision == "r" or decision == "R":
-                    config = both_configs[0]
-                    break
-                elif decision == "s" or decision == "S":
-                    config = both_configs[1]
-                    break
-                else:
-                    print("Invalid Choice")
-
+            if decision == "r" or decision == "R":
+                both_configs = return_configs()
+                config = both_configs[0]
+            elif decision == "s" or decision == "S":
+                both_configs = return_configs()
+                config = both_configs[1]
+            else:
+                print("\nInvalid Choice, Going back to Menu")
+                menu()
             # Asks for the filename from the username for the saved configuration
             fileName = input("What would you like this configuration file to be called: ")
             fileName += ".txt" # Adds .txt file extension, not really necessarily on Linux but if imported into Windows it's nice.
@@ -118,7 +116,10 @@ def menu():
             print("Configuration successfully saved!")
 
         elif choice == "4":
-            print("Compare run with start") # Placeholder
+
+            print("Placeholder")
+
+
         elif choice == "5":
             print("Compare run with local") # Placeholder
         elif choice == "6":
