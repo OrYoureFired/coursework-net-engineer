@@ -5,6 +5,7 @@ import netmiko
 import getpass
 # Library to get the difference between 2 files (required by task 2)
 import difflib
+import pprint
 # Initialising "device_info" as a dictionary, this will store all of the information.
 device_info = {}
 device_info["ip"] = input("Enter the IP address of the device you would like to connect to: ")
@@ -121,7 +122,16 @@ def menu():
 
         elif choice == "4":
 
-            print("Placeholder")
+            configs = return_configs()
+            run_config = configs[0].split('\n')
+            start_config = configs[1].split('\n')
+
+            for diff in difflib.unified_diff(run_config,start_config):
+                print(diff.strip(" "))
+            print("\nChanges with - are present in running-config\nChanges with + are present in startup-config\nLines with no symbol are the same.")
+
+            decision = input("Would you like to save these changes in a file? (y/n): ")
+
 
 
         elif choice == "5":
