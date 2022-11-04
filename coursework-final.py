@@ -3,7 +3,8 @@ import netmiko
 # Importing getpass so that the password isn't shown when it's entered into the console
 # Similar to sudo prompt in UNIX-Like OSes (Linux, MacOS, BSD etc.)
 import getpass
-
+# Library to get the difference between 2 files (required by task 2)
+import difflib
 # Initialising "device_info" as a dictionary, this will store all of the information.
 device_info = {}
 device_info["ip"] = input("Enter the IP address of the device you would like to connect to: ")
@@ -58,18 +59,20 @@ def return_configs():
 
 
     session.enable() # This is equivalent to typing "enable" in Cisco IOS, required for "show running-config" to run.
-
-# Saves the entire configuration into this "config" variable.    
     
-    
+    # Saves both configs into variables
     run_config = session.send_command("show running-config")
     start_config = session.send_command("show startup-config")
 
+    # And puts those variables into a list, that will be returned.
     configs = [run_config, start_config]
 
+    # Disconnect from the router
     session.disconnect()
 
-    return(configs)
+    # This will return a list, containing the run and start config (in that order)
+    # Very convienient for task 2.
+    return(configs) 
 
 # Menu system
 def menu():
@@ -90,12 +93,12 @@ def menu():
             connection("cisco_ios") # Passes the string required to SSH
         elif choice == "3":
             # This used to be part of a "save_config()" function, however I removed the save functionality
-            # and implemented it within the if statement itself, in order to use the config function for more things
+            # and implemented it within the if statement itself, in order to use the return_config function for more things
             print("Which Configuration would you like to save?")
             decision = input("Running or Startup? (R/S): ")
-            
+            # This will ask whether the user would like to save to running or startup configuration
             if decision == "r" or decision == "R":
-                both_configs = return_configs()
+                both_configs = return_configs() # Takes the list that is returned, and sets the chosen config to another variable to be manipulated.
                 config = both_configs[0]
             elif decision == "s" or decision == "S":
                 both_configs = return_configs()
@@ -103,6 +106,7 @@ def menu():
             else:
                 print("\nInvalid Choice, Going back to Menu")
                 menu()
+                
             # Asks for the filename from the username for the saved configuration
             fileName = input("What would you like this configuration file to be called: ")
             fileName += ".txt" # Adds .txt file extension, not really necessarily on Linux but if imported into Windows it's nice.
