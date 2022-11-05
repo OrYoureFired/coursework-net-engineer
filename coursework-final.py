@@ -131,23 +131,28 @@ def menu():
                 print(diff.strip(" ")) # .strip(" ") is not required, but makes the output look nicer.
             # Added explanation
             print("\nChanges with - are present in running-config\nChanges with + are present in startup-config\nLines with no symbol are the same.")
-            
-            decision = input("Would you like to save these changes in a file? (y/n): ")
 
-            if decision == "y" or decision == "Y":
-                fileName = input("What would you like this configuration file to be called: ")
-                fileName += ".txt" 
-            
-                file = open(fileName, "w")
-                file.write(diff)
-                file.close()
-            else:
-                print("Okay!")
-                menu()
+            menu()
 
 
         elif choice == "5":
-            print("Compare run with local") # Placeholder
+            
+
+            file_name = input("What file would you like to compare with: ")
+            file = open(file_name, "r")
+            local_file_contents = file.read().split("\n")
+
+            configs = return_configs()
+            run_config = configs[0].split("\n")
+
+            
+            
+            for diff in difflib.unified_diff(run_config, local_file_contents):
+                print(diff.strip(" "))
+            
+            print("\nChanges with - are present in running-config\nChanges with + are present in startup-config\nLines with no symbol are the same.")
+            menu()
+        
         elif choice == "6":
             print("Bye Bye!") # Passes no functions, ending the program.
         else:
