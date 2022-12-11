@@ -7,6 +7,10 @@ device_info["user"] = input("Please enter the Username of the Device: ")
 device_info["passwd"] = getpass.getpass(prompt="Enter the password: ")
 device_info["secret"] = getpass.getpass(prompt="Enter the secret: ")
 
+# The way this script works:
+# Menu > Pick Entry > Set Config/Use Default > Config goes to sendConfig() > Sends and receives config
+# from *Commands() function > sends config to router > receives and displays output to verify.
+
 def ipCommands(config={}):
     commands = [
         "interface {}".format(config["interface"]),
@@ -20,30 +24,6 @@ def loopbackCommands(config={}):
     ]
 
     return commands
-
-# def loopback(config):
-#     session = netmiko.ConnectHandler(
-#         device_type="cisco_ios",
-#         host=device_info["ip"],
-#         username=device_info["user"],
-#         password=device_info["passwd"],
-#         secret=device_info["secret"]) 
-
-#     if session.find_prompt() != 0:
-#         print("Successfully Connected!")
-#     else:
-#         print("Unable to Connect")
-    
-#     # Converts configuration into commands that the router can use
-#     commands = loopbackCommands(config)
-
-#     # Sends the commands (send_config_set() = configure terminal) 
-#     session.send_config_set(commands)
-
-#     print("Successfully Sent Configuration!")
-#     loopbackVerify = session.send_command("show running-config | section interface loopback")
-#     session.disconnect()
-#     return(loopbackVerify)
 
 def ospfCommands(config):
     commands = [
@@ -104,7 +84,7 @@ def sendConfig(config,configType):
     if configType.lower() == "loopback":
         configTypeFormatted = "Loopback"
     else:
-        configTypeFormatted = configType
+        configTypeFormatted = configType.lower()
     
     verification = session.send_command("show running-config | section {}".format(configTypeFormatted))
     session.disconnect()
@@ -148,14 +128,13 @@ def menu():
                 break
             else: 
                 print("Invalid Choice")
-        print(sendConfig(config))
+        print(sendConfig(config,"loopback"))
 
         while True:
             choice = input("Would you also like to configure an IP Address on an interface?\n(Y/N): ")
             if choice.lower() == "y":
                 break
             elif choice.lower() == "n":
-                break
                 menu()
             else:
                 print("Invalid Choice")
@@ -176,8 +155,9 @@ def menu():
             else: 
                 print("Invalid Choice")
 
-        print(sendConfig(ipConfig))
-        
+        print(sendConfig(ipConfig,"ip"))
+        menu()
+
     elif choice == "2":
         print("Configurable Protocols")
         print("1: OSPF")
@@ -217,6 +197,7 @@ def menu():
                     print("Invalid Choice")
             
             print(sendConfig(config,"ospf"))
+            menu()
 
         elif choice == "2":
             config = {
@@ -245,6 +226,7 @@ def menu():
                 else:
                     print("Invalid Choice")
             print(sendConfig(config,"eigrp"))
+            menu()
 
         elif choice == "3":
             config = "192.168.43.0"
@@ -264,6 +246,7 @@ def menu():
                     print("Invalid Choice")
 
             print(sendConfig(config,"rip"))
+            menu()
 
         elif choice == "4": # Return to Menu
             menu()
